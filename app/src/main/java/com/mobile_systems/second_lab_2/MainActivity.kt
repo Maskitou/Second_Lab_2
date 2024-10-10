@@ -5,42 +5,37 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var epsilonEditText: EditText
-    private lateinit var calculateButton: Button
-    private lateinit var resultTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        epsilonEditText = findViewById(R.id.epsilonEditText)
-        calculateButton = findViewById(R.id.calculateButton)
-        resultTextView = findViewById(R.id.resultTextView)
-
-        calculateButton.setOnClickListener {
-            val termsString = epsilonEditText.text.toString()
-            if (termsString.isNotEmpty()) {
-                val terms = termsString.toInt()
-                val (result,iterations) = calculateSeriesSum(terms)
-                resultTextView.text = "Результат: $result Количество итераций: $iterations"
-            } else {
-                resultTextView.text = "Пожалуйста, введите количество членов."
-            }
-        }
-    }
-
-    private fun calculateSeriesSum(n: Int): Pair < Double, Int> {
+        // Параметры
+        val epsilon = 0.0001 // малое число для остановки
         var sum = 0.0
-        for (i in 1..n) {
-            sum += 1.0 / (i * i) // Сумма ряда 1/(i^2)
+        var lastTerm = 0.0
+        var n = 1
+        var iterations = 0
+
+        // Цикл вычисления суммы
+        while (true) {
+            lastTerm = 1.0 / (n * n)
+            sum += lastTerm
+            iterations++
+
+            // Проверка условия остановки
+            if (Math.abs(lastTerm) < epsilon) {
+                break
+            }
+
+            n++
         }
-        return Pair(sum,n)
+
+        // Вывод результата на экран
+        val resultTextView: TextView = findViewById(R.id.resultTextView)
+        resultTextView.text = "Сумма: $sum Последнее слагаемое: $lastTerm Количество итераций: $iterations"
     }
 }
